@@ -11,7 +11,7 @@ export default defineConfig({
     ],
     proxy: {
       '/api': {
-        target: 'http://localhost:3000', 
+        target: 'https://management-backend-a3je.onrender.com/', 
         changeOrigin: true,
         secure: false,
       }
