@@ -1,6 +1,6 @@
 import { io } from "socket.io-client";
 
-const SOCKET_URL = "https://management-backend-a3je.onrender.com/"; 
+const SOCKET_URL = "https://management-backend-a3je.onrender.com"; 
 
 export const socket = io(SOCKET_URL, {
     withCredentials: true,
