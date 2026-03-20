@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import api from "../../api/axios";
+import api from "../../api/axios.js";
 import { toast } from "react-hot-toast";
 
 export const fetchExpensesAction = createAsyncThunk(

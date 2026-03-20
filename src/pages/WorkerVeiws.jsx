@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Calendar, IndianRupee, History, User, Phone, CheckCircle, XCircle, Download, Loader2 } from 'lucide-react';
-import api from '../api/axios';
+import api from '../api/axios.js';
 import jsPDF from 'jspdf';
 import * as autoTableModule from 'jspdf-autotable';
 

@@ -7,7 +7,7 @@ import {
   CheckCircle, XCircle, MoreVertical, Eye, Calendar, Save, UserX
 } from 'lucide-react';
 import AddWorkerModal from '../components/AddWorkerModals';
-import api from '../api/axios';
+import api from '../api/axios.js';
 
 const WorkerList = ({ searchTerm }) => {
   const dispatch = useDispatch();

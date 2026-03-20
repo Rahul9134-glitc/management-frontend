@@ -6,7 +6,7 @@ import {
 } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
-import api from "./api/axios";
+import api from "./api/axios.js";
 import { setLogin, setLogout, setLoading } from "./store/slices/authSlice";
 import { setGroup } from "./store/slices/groupSlices"; 
 

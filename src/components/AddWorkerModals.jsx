@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { X, User, Phone, Banknote, ShieldCheck, Loader2, Briefcase } from 'lucide-react';
-import api from '../api/axios';
+import api from '../api/axios.js';
 
 const AddWorkerModal = ({ closeModal, refreshData, editData }) => {
   const [formData, setFormData] = useState({
