@@ -1,12 +1,13 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import api from "../../api/axios.js";
+// import api from "../../api/axios.js";
+import axios from "axios";
 import { toast } from "react-hot-toast";
 
 export const fetchAccounts = createAsyncThunk(
   "accounts/fetchAll",
   async (_, { rejectWithValue }) => {
     try {
-      const res = await api.get("/money/all");
+      const res = await axios.get("https://management-backend-a3je.onrender.com/api/v1/money/all");
       return res.data.data;
     } catch (err) {
       return rejectWithValue(
@@ -20,7 +21,7 @@ export const createAccount = createAsyncThunk(
   "money/create",
   async (data, { rejectWithValue }) => {
     try {
-      const res = await api.post("/money/create", data);
+      const res = await axios.post("https://management-backend-a3je.onrender.com/api/v1/money/create", data);
       toast.success("Naya bucket ban gaya!");
       return res.data.data;
     } catch (err) {
@@ -34,7 +35,7 @@ export const addMoney = createAsyncThunk(
   "money/addMoney",
   async ({ accountId, amount }, { rejectWithValue }) => {
     try {
-      const res = await api.post(`/money/add-money/${accountId}`, { amount });
+      const res = await axios.post(`https://management-backend-a3je.onrender.com/api/v1/money/add-money/${accountId}`, { amount });
       toast.success("Paisa add ho gaya!");
       return res.data.data;
     } catch (err) {
@@ -48,8 +49,8 @@ export const updateAccountName = createAsyncThunk(
   "account/updateAccountName",
   async ({ accountId, holderName, purpose, balance }, { rejectWithValue }) => {
     try {
-      const response = await api.patch(
-        `/money/update-money/${accountId}`,
+      const response = await axios.patch(
+        `https://management-backend-a3je.onrender.com/api/v1/money/update-money/${accountId}`,
         {
           holderName,
           purpose,
@@ -67,7 +68,7 @@ export const createShoppingEntry = createAsyncThunk(
   "shopping/create",
   async (data, { rejectWithValue }) => {
     try {
-      const res = await api.post("/shopping/add-item", data);
+      const res = await axios.post("https://management-backend-a3je.onrender.com/api/v1/shopping/add-item", data);
       toast.success("Shopping entry successful!");
       return res.data.data;
     } catch (err) {
@@ -81,8 +82,8 @@ export const updateShoppingEntry = createAsyncThunk(
   "shopping/update",
   async ({ shoppingId, formData }, { rejectWithValue }) => {
     try {
-      const response = await api.patch(
-        `/shopping/update-item/${shoppingId}`,
+      const response = await axios.patch(
+        `https://management-backend-a3je.onrender.com/api/v1/shopping/update-item/${shoppingId}`,
         formData,
       );
       return response.data.data;
@@ -96,7 +97,7 @@ export const deleteShoppingEntry = createAsyncThunk(
   "shopping/delete",
   async (shoppingId, { rejectWithValue }) => {
     try {
-      const response = await api.delete(`/shopping/delete-item/${shoppingId}`);
+      const response = await axios.delete(`https://management-backend-a3je.onrender.com/api/v1/shopping/delete-item/${shoppingId}`);
       return { shoppingId, ...response.data.data };
     } catch (error) {
       return rejectWithValue(error.response.data.message);
@@ -108,7 +109,7 @@ export const fetchShoppingHistory = createAsyncThunk(
   "shopping/fetchHistory",
   async (accountId, { rejectWithValue }) => {
     try {
-      const res = await api.get(`/shopping/get-history/${accountId}`);
+      const res = await axios.get(`https://management-backend-a3je.onrender.com/api/v1/shopping/get-history/${accountId}`);
       return { accountId, history: res.data.data };
     } catch (err) {
       return rejectWithValue(err.response?.data?.message);

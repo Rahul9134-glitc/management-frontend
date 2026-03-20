@@ -7,7 +7,8 @@ import {
   CheckCircle, XCircle, MoreVertical, Eye, Calendar, Save, UserX
 } from 'lucide-react';
 import AddWorkerModal from '../components/AddWorkerModals';
-import api from '../api/axios.js';
+// import api from '../api/axios.js';
+import axios from 'axios';
 
 const WorkerList = ({ searchTerm }) => {
   const dispatch = useDispatch();
@@ -59,7 +60,7 @@ const WorkerList = ({ searchTerm }) => {
         workerId: id,
         status: attendance[id] === 'P' ? 'Present' : attendance[id] === 'H' ? 'Half-Day' : 'Absent'
       }));
-      await api.post("/attendence/mark", { date: selectedDate, attendanceRecords });
+      await axios.post("https://management-backend-a3je.onrender.com/api/v1/attendence/mark", { date: selectedDate, attendanceRecords });
       alert("Daily Sheet save ho gayi!");
       setAttendance({});
       dispatch(fetchAllWorkers({ role: activeTab, search: searchTerm }));
@@ -74,7 +75,7 @@ const WorkerList = ({ searchTerm }) => {
     if (!paymentData.amount) return alert("Amount likho bhai!");
     setIsPaymentSaving(true);
     try {
-      await api.post("/payment/add", { 
+      await axios.post("https://management-backend-a3je.onrender.com/api/v1/payment/add", { 
         workerId: selectedWorker._id, 
         amount: Number(paymentData.amount), 
         description: paymentData.description 

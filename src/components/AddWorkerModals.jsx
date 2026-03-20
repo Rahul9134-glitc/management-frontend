@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, User, Phone, Banknote, ShieldCheck, Loader2, Briefcase } from 'lucide-react';
-import api from '../api/axios.js';
+// import api from '../api/axios.js';
+import axios from 'axios';
 
 const AddWorkerModal = ({ closeModal, refreshData, editData }) => {
   const [formData, setFormData] = useState({
@@ -33,13 +34,13 @@ const AddWorkerModal = ({ closeModal, refreshData, editData }) => {
       // Backend ko 'status' ke roop mein data bhej rahe hain
       // Controller isse isActive (true/false) mein convert kar lega
       if (editData) {
-        const response = await api.patch(`/worker/update-worker/${editData._id}`, formData);
+        const response = await axios.patch(`https://management-backend-a3je.onrender.com/api/v1/worker/update-worker/${editData._id}`, formData);
         if (response.data.success) {
           refreshData();
           closeModal();
         }
       } else {
-        const response = await api.post("/worker/register", formData);
+        const response = await axios.post("https://management-backend-a3je.onrender.com/api/v1/worker/register", formData);
         if (response.data.success) {
           refreshData();
           closeModal();

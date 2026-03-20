@@ -1,12 +1,13 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import api from "../../api/axios.js";
+// import api from "../../api/axios.js";
 import { toast } from "react-hot-toast";
+import axios from "axios";
 
 export const fetchExpensesAction = createAsyncThunk(
   "expense/fetchAll",
   async (groupId, { rejectWithValue }) => {
     try {
-      const response = await api.get(`/expense/group/${groupId}`);
+      const response = await axios.get(`https://management-backend-a3je.onrender.com/api/v1/expense/group/${groupId}`);
       return response.data.data;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || "Kharche fetch nahi ho paye!");
@@ -19,7 +20,7 @@ export const createExpenseAction = createAsyncThunk(
   "expense/create",
   async (expenseData, { rejectWithValue }) => {
     try {
-      const response = await api.post("/expense/add", expenseData);
+      const response = await axios.post("https://management-backend-a3je.onrender.com/api/v1/expense/add", expenseData);
       return response.data.data;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || "Expense add karne mein error!");
@@ -32,7 +33,7 @@ export const approveExpenseAction = createAsyncThunk(
   "expense/approve",
   async (expenseId, { rejectWithValue }) => {
     try {
-      const response = await api.patch(`/expense/approve/${expenseId}`);
+      const response = await axios.patch(`https://management-backend-a3je.onrender.com/api/v1/expense/approve/${expenseId}`);
       return response.data.data;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || "Approve nahi ho paya!");

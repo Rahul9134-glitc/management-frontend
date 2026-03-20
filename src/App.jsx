@@ -6,9 +6,10 @@ import {
 } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
-import api from "./api/axios.js";
+// import api from "./api/axios.js";
 import { setLogin, setLogout, setLoading } from "./store/slices/authSlice";
 import { setGroup } from "./store/slices/groupSlices"; 
+import axios from "axios";
 
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -31,7 +32,7 @@ function App() {
   const persistUser = async () => {
     dispatch(setLoading(true));
     try {
-      const response = await api.get("/auth/current-user");
+      const response = await axios.get("https://management-backend-a3je.onrender.com/api/v1/auth/current-user");
 
       if (response.data.success) {
         const userData = response.data.data;
@@ -39,7 +40,7 @@ function App() {
 
         if (userData.currentGroup) {
           try {
-            const groupRes = await api.get("/group/details");
+            const groupRes = await axios.get("https://management-backend-a3je.onrender.com/api/v1/group/details");
             if (groupRes.data.success) {
               dispatch(setGroup(groupRes.data.data)); 
             }

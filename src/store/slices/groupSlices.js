@@ -1,12 +1,13 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import api from "../../api/axios.js";
+// import api from "../../api/axiosaxios";
+import axios from "axios";
 import { toast } from "react-hot-toast";
 
 export const createGroupAction = createAsyncThunk(
     "group/create",
     async (groupData, { rejectWithValue }) => {
         try {
-            const response = await api.post("/group/create", groupData);
+            const response = await axios.post("https://management-backend-a3je.onrender.com/api/v1/group/create", groupData);
             return response.data.data;
         } catch (error) {
             return rejectWithValue(error.response.data.message || "Group banane mein error!");
@@ -18,7 +19,7 @@ export const joinGroupAction = createAsyncThunk(
     "group/join",
     async (joinData, { rejectWithValue }) => {
         try {
-            const response = await api.post("/group/join", joinData);
+            const response = await axios.post("https://management-backend-a3je.onrender.com/api/v1/group/join", joinData);
             return response.data.data;
         } catch (error) {
             return rejectWithValue(error.response.data.message || "Join karne mein error!");
@@ -30,7 +31,7 @@ export const getGroupDetailsAction = createAsyncThunk(
     "group/getDetails",
     async (_, { rejectWithValue }) => {
         try {
-            const response = await api.get("/group/details");
+            const response = await axios.get("https://management-backend-a3je.onrender.com/api/v1/group/details");
             return response.data.data; 
         } catch (error) {
             return rejectWithValue(error.response?.data?.message || "Group details nahi mil payi!");
@@ -42,7 +43,7 @@ export const toggleStatusAction = createAsyncThunk(
     "group/toggleStatus",
     async (_, { rejectWithValue }) => {
         try {
-            const response = await api.patch("/group/toggle-status");
+            const response = await axios.patch("https://management-backend-a3je.onrender.com/api/v1/group/toggle-status");
             return response.data.data;
         } catch (error) {
             return rejectWithValue(error.response.data.message);
@@ -54,7 +55,7 @@ export const requestInactiveAction = createAsyncThunk(
     "group/requestInactive",
     async (_, { rejectWithValue }) => {
         try {
-            const response = await api.patch("/group/request-inactive");
+            const response = await axios.patch("https://management-backend-a3je.onrender.com/api/v1/group/request-inactive");
             return response.data.data; 
         } catch (error) {
             return rejectWithValue(error.response.data.message);
@@ -66,7 +67,7 @@ export const approveInactiveAction = createAsyncThunk(
     "group/approveInactive",
     async (targetUserId, { rejectWithValue }) => {
         try {
-            const response = await api.patch(`/group/approve-inactive/${targetUserId}`);
+            const response = await axios.patch(`https://management-backend-a3je.onrender.com/api/v1/group/approve-inactive/${targetUserId}`);
             return response.data.data; 
         } catch (error) {
             return rejectWithValue(error.response.data.message);

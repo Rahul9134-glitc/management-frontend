@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import api from "../../api/axios.js";
+// import api from "../../api/axios.js";
+import axios from "axios";
 
 // src/store/slices/WorkerReducer.js
 
@@ -7,7 +8,7 @@ export const fetchAllWorkers = createAsyncThunk(
   "worker/fetchAll",
   async ({ role, search }, { rejectWithValue }) => { 
     try {
-      let url = "/worker/all";
+      let url = "https://management-backend-a3je.onrender.com/api/v1/worker/all";
       
       const params = new URLSearchParams();
       if (role && role !== "All") params.append("role", role);
@@ -18,7 +19,7 @@ export const fetchAllWorkers = createAsyncThunk(
         url = `${url}?${queryString}`;
       }
 
-      const response = await api.get(url);
+      const response = await axios.get(url);
       return response.data.data;
     } catch (error) {
       return rejectWithValue(
@@ -32,7 +33,7 @@ export const deleteWorker = createAsyncThunk(
   "worker/delete",
   async (id, { rejectWithValue }) => {
     try {
-      await api.delete(`/worker/delete-worker/${id}`);
+      await axios.delete(`https://management-backend-a3je.onrender.com/api/v1/worker/delete-worker/${id}`);
       return id; // Hum ID return karenge taaki state se filter kar sakein
     } catch (error) {
       return rejectWithValue(
@@ -46,7 +47,7 @@ export const addNewWorker = createAsyncThunk(
   "worker/add",
   async (workerData, { rejectWithValue }) => {
     try {
-      const response = await api.post("/worker/register", workerData);
+      const response = await axios.post("https://management-backend-a3je.onrender.com/api/v1/worker/register", workerData);
       return response.data.data.worker;
     } catch (error) {
       return rejectWithValue(
@@ -60,7 +61,7 @@ export const updateWorker = createAsyncThunk(
   "worker/update",
   async ({ id, formData }, { rejectWithValue }) => {
     try {
-      const response = await api.put(`/worker/update-worker/${id}`, formData);
+      const response = await axios.put(`https://management-backend-a3je.onrender.com/api/v1/worker/update-worker/${id}`, formData);
       return response.data.data;
     } catch (error) {
       return rejectWithValue(
