@@ -1,15 +1,13 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-// import api from "../../api/axios.js";
-import axios from "axios";
+import api from "../../api/axios"; // ✅ use instance
 
-// src/store/slices/WorkerReducer.js
-
+// ✅ FETCH ALL WORKERS
 export const fetchAllWorkers = createAsyncThunk(
   "worker/fetchAll",
-  async ({ role, search }, { rejectWithValue }) => { 
+  async ({ role, search }, { rejectWithValue }) => {
     try {
-      let url = "https://management-backend-a3je.onrender.com/api/v1/worker/all";
-      
+      let url = "/worker/all";
+
       const params = new URLSearchParams();
       if (role && role !== "All") params.append("role", role);
       if (search && search.trim() !== "") params.append("search", search);
@@ -19,56 +17,62 @@ export const fetchAllWorkers = createAsyncThunk(
         url = `${url}?${queryString}`;
       }
 
-      const response = await axios.get(url);
+      const response = await api.get(url);
       return response.data.data;
     } catch (error) {
       return rejectWithValue(
-        error.response?.data?.message || "Workers are not found!"
+        error.response?.data?.message || "Failed to fetch workers!"
       );
     }
   }
 );
 
+// ✅ DELETE WORKER
 export const deleteWorker = createAsyncThunk(
   "worker/delete",
   async (id, { rejectWithValue }) => {
     try {
-      await axios.delete(`https://management-backend-a3je.onrender.com/api/v1/worker/delete-worker/${id}`);
-      return id; // Hum ID return karenge taaki state se filter kar sakein
+      await api.delete(`/worker/delete-worker/${id}`);
+      return id;
     } catch (error) {
       return rejectWithValue(
-        error.response?.data?.message || "Worker is no deleted!",
+        error.response?.data?.message || "Failed to delete worker!"
       );
     }
-  },
+  }
 );
 
+// ✅ ADD WORKER
 export const addNewWorker = createAsyncThunk(
   "worker/add",
   async (workerData, { rejectWithValue }) => {
     try {
-      const response = await axios.post("https://management-backend-a3je.onrender.com/api/v1/worker/register", workerData);
+      const response = await api.post("/worker/register", workerData);
       return response.data.data.worker;
     } catch (error) {
       return rejectWithValue(
-        error.response?.data?.message || "Worker is not added!",
+        error.response?.data?.message || "Failed to add worker!"
       );
     }
-  },
+  }
 );
 
+// ✅ UPDATE WORKER
 export const updateWorker = createAsyncThunk(
   "worker/update",
   async ({ id, formData }, { rejectWithValue }) => {
     try {
-      const response = await axios.put(`https://management-backend-a3je.onrender.com/api/v1/worker/update-worker/${id}`, formData);
+      const response = await api.put(
+        `/worker/update-worker/${id}`,
+        formData
+      );
       return response.data.data;
     } catch (error) {
       return rejectWithValue(
-        error.response?.data?.message || "Update is not sucsessfully",
+        error.response?.data?.message || "Failed to update worker!"
       );
     }
-  },
+  }
 );
 
 const workerSlice = createSlice({
@@ -89,6 +93,7 @@ const workerSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+      // FETCH
       .addCase(fetchAllWorkers.pending, (state) => {
         state.loading = true;
       })
@@ -97,7 +102,7 @@ const workerSlice = createSlice({
         state.workers = action.payload;
         state.stats.totalWorkers = action.payload.length;
         state.stats.activeWorkers = action.payload.filter(
-          (w) => w.status === "Active",
+          (w) => w.status === "Active"
         ).length;
       })
       .addCase(fetchAllWorkers.rejected, (state, action) => {
@@ -105,27 +110,34 @@ const workerSlice = createSlice({
         state.error = action.payload;
       })
 
+      // ADD
       .addCase(addNewWorker.fulfilled, (state, action) => {
         state.workers.push(action.payload);
         state.stats.totalWorkers += 1;
-        if (action.payload.status === "Active") state.stats.activeWorkers += 1;
+        if (action.payload.status === "Active") {
+          state.stats.activeWorkers += 1;
+        }
       })
+
+      // DELETE
       .addCase(deleteWorker.fulfilled, (state, action) => {
         state.workers = state.workers.filter(
-          (worker) => worker._id !== action.payload,
+          (worker) => worker._id !== action.payload
         );
+        state.stats.totalWorkers -= 1;
       })
       .addCase(deleteWorker.rejected, (state, action) => {
         state.error = action.payload;
       })
 
+      // UPDATE
       .addCase(updateWorker.pending, (state) => {
         state.loading = true;
       })
       .addCase(updateWorker.fulfilled, (state, action) => {
         state.loading = false;
         state.workers = state.workers.map((worker) =>
-          worker._id === action.payload._id ? action.payload : worker,
+          worker._id === action.payload._id ? action.payload : worker
         );
       })
       .addCase(updateWorker.rejected, (state, action) => {

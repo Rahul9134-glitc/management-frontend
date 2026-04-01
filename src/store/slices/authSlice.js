@@ -1,39 +1,47 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-// import api from "../../api/axios.js";
-import axios from "axios";
+import api from "../../api/axios"; // ✅ sirf ye use hoga
 
+// ✅ LOGIN
 export const loginUser = createAsyncThunk(
     "auth/login",
     async (credentials, { rejectWithValue }) => {
         try {
-            const response = await axios.post("https://management-backend-a3je.onrender.com/api/v1/auth/login", credentials);
-            return response.data.data; 
+            const response = await api.post("/auth/login", credentials);
+            return response.data.data;
         } catch (error) {
-            return rejectWithValue(error.response?.data?.message || "Login Failed!");
+            return rejectWithValue(
+                error.response?.data?.message || "Login Failed!"
+            );
         }
     }
 );
 
+// ✅ REGISTER
 export const registerUser = createAsyncThunk(
     "auth/register",
     async (userData, { rejectWithValue }) => {
         try {
-            const response = await axios.post("https://management-backend-a3je.onrender.com/api/v1/auth/register", userData);
+            const response = await api.post("/auth/register", userData);
             return response.data.data;
         } catch (error) {
-            return rejectWithValue(error.response?.data?.message || "Registration failed!");
+            return rejectWithValue(
+                error.response?.data?.message || "Registration failed!"
+            );
         }
     }
 );
 
+// ✅ LOGOUT
 export const logoutUser = createAsyncThunk(
     "auth/logout",
     async (_, { rejectWithValue }) => {
         try {
-            await axios.post("https://management-backend-a3je.onrender.com/api/v1/auth/logout");
+            await api.post("/auth/logout");
             return null;
         } catch (error) {
-            return rejectWithValue("Something went Wrong when Logout user!");
+            return rejectWithValue(
+                error.response?.data?.message || "Logout failed!"
+            );
         }
     }
 );
@@ -55,16 +63,16 @@ const authSlice = createSlice({
         setLoading: (state, action) => {
             state.loading = action.payload;
         },
-        // Manual logout ke liye
         setLogout: (state) => {
             state.user = null;
             state.isLoggedIn = false;
             state.loading = false;
             state.error = null;
-        }
+        },
     },
     extraReducers: (builder) => {
         builder
+            // LOGIN
             .addCase(loginUser.pending, (state) => {
                 state.loading = true;
                 state.error = null;
@@ -78,17 +86,27 @@ const authSlice = createSlice({
                 state.loading = false;
                 state.error = action.payload;
             })
-            
+
+            // LOGOUT
             .addCase(logoutUser.fulfilled, (state) => {
                 state.user = null;
                 state.isLoggedIn = false;
                 state.loading = false;
             })
 
+            // REGISTER
+            .addCase(registerUser.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
             .addCase(registerUser.fulfilled, (state, action) => {
                 state.loading = false;
                 state.isLoggedIn = true;
                 state.user = action.payload.user;
+            })
+            .addCase(registerUser.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
             });
     },
 });

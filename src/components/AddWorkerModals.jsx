@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { X, User, Phone, Banknote, ShieldCheck, Loader2, Briefcase } from 'lucide-react';
-// import api from '../api/axios.js';
-import axios from 'axios';
+import api from '../api/axios';
 
 const AddWorkerModal = ({ closeModal, refreshData, editData }) => {
   const [formData, setFormData] = useState({
@@ -9,11 +8,10 @@ const AddWorkerModal = ({ closeModal, refreshData, editData }) => {
     phone: '',
     dailyWage: '',
     role: 'Labour',
-    status: 'Active' // UI ke liye string rakha hai
+    status: 'Active'
   });
   const [loading, setLoading] = useState(false);
 
-  // Jab Edit button pe click hoga, ye data load karega
   useEffect(() => {
     if (editData) {
       setFormData({
@@ -21,7 +19,6 @@ const AddWorkerModal = ({ closeModal, refreshData, editData }) => {
         phone: editData.phone || '',
         dailyWage: editData.dailyWage || '',
         role: editData.role || 'Labour',
-        // Agar DB mein isActive true hai toh 'Active', nahi toh 'Inactive'
         status: editData.isActive !== false ? 'Active' : 'Inactive'
       });
     }
@@ -31,23 +28,27 @@ const AddWorkerModal = ({ closeModal, refreshData, editData }) => {
     e.preventDefault();
     setLoading(true);
     try {
-      // Backend ko 'status' ke roop mein data bhej rahe hain
-      // Controller isse isActive (true/false) mein convert kar lega
       if (editData) {
-        const response = await axios.patch(`https://management-backend-a3je.onrender.com/api/v1/worker/update-worker/${editData._id}`, formData);
+        const response = await api.patch(
+          `/worker/update-worker/${editData._id}`,
+          formData
+        );
         if (response.data.success) {
           refreshData();
           closeModal();
         }
       } else {
-        const response = await axios.post("https://management-backend-a3je.onrender.com/api/v1/worker/register", formData);
+        const response = await api.post(
+          "/worker/register",
+          formData
+        );
         if (response.data.success) {
           refreshData();
           closeModal();
         }
       }
     } catch (error) {
-      alert(error.response?.data?.message || "Kuch gadbad ho gayi!");
+      alert(error.response?.data?.message || "Something went wrong!");
     } finally {
       setLoading(false);
     }
@@ -57,7 +58,6 @@ const AddWorkerModal = ({ closeModal, refreshData, editData }) => {
     <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
       <div className="bg-white w-full max-w-md rounded-2xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
         
-        {/* HEADER */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
           <h2 className="text-xl font-bold text-gray-900">
             {editData ? "Edit Worker Details" : "Naya Worker Add Karein"}
@@ -67,10 +67,8 @@ const AddWorkerModal = ({ closeModal, refreshData, editData }) => {
           </button>
         </div>
 
-        {/* FORM */}
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           
-          {/* Name */}
           <div className="space-y-1">
             <label className="text-xs font-bold text-gray-500 uppercase ml-1">Full Name</label>
             <div className="relative">
@@ -86,7 +84,6 @@ const AddWorkerModal = ({ closeModal, refreshData, editData }) => {
             </div>
           </div>
 
-          {/* Role */}
           <div className="space-y-1">
             <label className="text-xs font-bold text-gray-500 uppercase ml-1">Category</label>
             <div className="relative">
@@ -103,7 +100,6 @@ const AddWorkerModal = ({ closeModal, refreshData, editData }) => {
             </div>
           </div>
 
-          {/* Phone */}
           <div className="space-y-1">
             <label className="text-xs font-bold text-gray-500 uppercase ml-1">Phone Number</label>
             <div className="relative">
@@ -119,7 +115,6 @@ const AddWorkerModal = ({ closeModal, refreshData, editData }) => {
             </div>
           </div>
 
-          {/* Daily Wage */}
           <div className="space-y-1">
             <label className="text-xs font-bold text-gray-500 uppercase ml-1">Daily Wage (₹)</label>
             <div className="relative">
@@ -135,7 +130,6 @@ const AddWorkerModal = ({ closeModal, refreshData, editData }) => {
             </div>
           </div>
 
-          {/* Status Field (Naya Toggle) */}
           <div className="space-y-1">
             <label className="text-xs font-bold text-gray-500 uppercase ml-1">Working Status</label>
             <div className="relative">
@@ -155,7 +149,6 @@ const AddWorkerModal = ({ closeModal, refreshData, editData }) => {
             </div>
           </div>
 
-          {/* BUTTONS */}
           <div className="flex gap-3 pt-4">
             <button 
               type="button"

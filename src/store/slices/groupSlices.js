@@ -1,16 +1,17 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-// import api from "../../api/axiosaxios";
-import axios from "axios";
 import { toast } from "react-hot-toast";
+import api from "../../api/axios";
 
 export const createGroupAction = createAsyncThunk(
     "group/create",
     async (groupData, { rejectWithValue }) => {
         try {
-            const response = await axios.post("https://management-backend-a3je.onrender.com/api/v1/group/create", groupData);
+            const response = await api.post("/group/create", groupData);
             return response.data.data;
         } catch (error) {
-            return rejectWithValue(error.response.data.message || "Group banane mein error!");
+            return rejectWithValue(
+                error.response?.data?.message || "Failed to create group!"
+            );
         }
     }
 );
@@ -19,10 +20,12 @@ export const joinGroupAction = createAsyncThunk(
     "group/join",
     async (joinData, { rejectWithValue }) => {
         try {
-            const response = await axios.post("https://management-backend-a3je.onrender.com/api/v1/group/join", joinData);
+            const response = await api.post("/group/join", joinData);
             return response.data.data;
         } catch (error) {
-            return rejectWithValue(error.response.data.message || "Join karne mein error!");
+            return rejectWithValue(
+                error.response?.data?.message || "Failed to join group!"
+            );
         }
     }
 );
@@ -31,10 +34,12 @@ export const getGroupDetailsAction = createAsyncThunk(
     "group/getDetails",
     async (_, { rejectWithValue }) => {
         try {
-            const response = await axios.get("https://management-backend-a3je.onrender.com/api/v1/group/details");
-            return response.data.data; 
+            const response = await api.get("/group/details");
+            return response.data.data;
         } catch (error) {
-            return rejectWithValue(error.response?.data?.message || "Group details nahi mil payi!");
+            return rejectWithValue(
+                error.response?.data?.message || "Failed to fetch group details!"
+            );
         }
     }
 );
@@ -43,10 +48,12 @@ export const toggleStatusAction = createAsyncThunk(
     "group/toggleStatus",
     async (_, { rejectWithValue }) => {
         try {
-            const response = await axios.patch("https://management-backend-a3je.onrender.com/api/v1/group/toggle-status");
+            const response = await api.patch("/group/toggle-status");
             return response.data.data;
         } catch (error) {
-            return rejectWithValue(error.response.data.message);
+            return rejectWithValue(
+                error.response?.data?.message || "Failed to toggle status!"
+            );
         }
     }
 );
@@ -55,10 +62,12 @@ export const requestInactiveAction = createAsyncThunk(
     "group/requestInactive",
     async (_, { rejectWithValue }) => {
         try {
-            const response = await axios.patch("https://management-backend-a3je.onrender.com/api/v1/group/request-inactive");
-            return response.data.data; 
+            const response = await api.patch("/group/request-inactive");
+            return response.data.data;
         } catch (error) {
-            return rejectWithValue(error.response.data.message);
+            return rejectWithValue(
+                error.response?.data?.message || "Failed to request inactive!"
+            );
         }
     }
 );
@@ -67,10 +76,12 @@ export const approveInactiveAction = createAsyncThunk(
     "group/approveInactive",
     async (targetUserId, { rejectWithValue }) => {
         try {
-            const response = await axios.patch(`https://management-backend-a3je.onrender.com/api/v1/group/approve-inactive/${targetUserId}`);
-            return response.data.data; 
+            const response = await api.patch(`/group/approve-inactive/${targetUserId}`);
+            return response.data.data;
         } catch (error) {
-            return rejectWithValue(error.response.data.message);
+            return rejectWithValue(
+                error.response?.data?.message || "Failed to approve inactive user!"
+            );
         }
     }
 );
@@ -105,6 +116,7 @@ const groupSlice = createSlice({
                 state.error = action.payload;
                 toast.error(action.payload);
             })
+
             .addCase(joinGroupAction.pending, (state) => {
                 state.loading = true;
             })
@@ -118,6 +130,7 @@ const groupSlice = createSlice({
                 state.error = action.payload;
                 toast.error(action.payload);
             })
+
             .addCase(getGroupDetailsAction.pending, (state) => {
                 state.loading = true;
             })
@@ -128,24 +141,29 @@ const groupSlice = createSlice({
             })
             .addCase(getGroupDetailsAction.rejected, (state, action) => {
                 state.loading = false;
-                state.currentGroup = null; 
+                state.currentGroup = null;
                 state.error = action.payload;
             })
+
             .addCase(toggleStatusAction.pending, (state) => {
                 state.loading = true;
             })
             .addCase(toggleStatusAction.fulfilled, (state, action) => {
                 state.loading = false;
-                state.currentGroup = action.payload; 
+                state.currentGroup = action.payload;
             })
             .addCase(toggleStatusAction.rejected, (state) => {
                 state.loading = false;
             })
-            .addCase(requestInactiveAction.pending, (state) => { state.loading = true; })
+
+            .addCase(requestInactiveAction.pending, (state) => {
+                state.loading = true;
+            })
             .addCase(requestInactiveAction.fulfilled, (state, action) => {
                 state.loading = false;
                 state.currentGroup = action.payload;
             })
+
             .addCase(approveInactiveAction.fulfilled, (state, action) => {
                 state.currentGroup = action.payload;
             });

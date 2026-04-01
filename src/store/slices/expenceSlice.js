@@ -1,42 +1,48 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-// import api from "../../api/axios.js";
 import { toast } from "react-hot-toast";
-import axios from "axios";
+import api from "../../api/axios"; // ✅ use instance
 
+// ✅ 1. Fetch Expenses
 export const fetchExpensesAction = createAsyncThunk(
   "expense/fetchAll",
   async (groupId, { rejectWithValue }) => {
     try {
-      const response = await axios.get(`https://management-backend-a3je.onrender.com/api/v1/expense/group/${groupId}`);
+      const response = await api.get(`/expense/group/${groupId}`);
       return response.data.data;
     } catch (error) {
-      return rejectWithValue(error.response?.data?.message || "Kharche fetch nahi ho paye!");
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to fetch expenses!"
+      );
     }
   }
 );
 
-// 2. Add new expense
+// ✅ 2. Add Expense
 export const createExpenseAction = createAsyncThunk(
   "expense/create",
   async (expenseData, { rejectWithValue }) => {
     try {
-      const response = await axios.post("https://management-backend-a3je.onrender.com/api/v1/expense/add", expenseData);
+      const response = await api.post("/expense/add", expenseData);
       return response.data.data;
     } catch (error) {
-      return rejectWithValue(error.response?.data?.message || "Expense add karne mein error!");
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to add expense!"
+      );
     }
   }
 );
 
-// 3. Approve an expense
+// ✅ 3. Approve Expense
 export const approveExpenseAction = createAsyncThunk(
   "expense/approve",
   async (expenseId, { rejectWithValue }) => {
     try {
-      const response = await axios.patch(`https://management-backend-a3je.onrender.com/api/v1/expense/approve/${expenseId}`);
+      const response = await api.patch(`/expense/approve/${expenseId}`);
       return response.data.data;
     } catch (error) {
-      return rejectWithValue(error.response?.data?.message || "Approve nahi ho paya!");
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to approve expense!"
+      );
     }
   }
 );
@@ -55,7 +61,7 @@ const expenseSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      // Fetch Expenses
+      // ✅ Fetch Expenses
       .addCase(fetchExpensesAction.pending, (state) => {
         state.loading = true;
       })
@@ -68,24 +74,34 @@ const expenseSlice = createSlice({
         state.error = action.payload;
       })
 
-      // Create Expense
+      // ✅ Create Expense
       .addCase(createExpenseAction.pending, (state) => {
         state.loading = true;
       })
       .addCase(createExpenseAction.fulfilled, (state, action) => {
         state.loading = false;
-        state.expenses.unshift(action.payload); // Naya kharcha list mein sabse upar dikhega
-        toast.success("Kharcha add ho gaya! Approval pending hai.");
+        state.expenses.unshift(action.payload);
+        toast.success("Expense added! Approval is pending.");
+      })
+      .addCase(createExpenseAction.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+        toast.error(action.payload);
       })
 
-      // Approve Expense
+      // ✅ Approve Expense
       .addCase(approveExpenseAction.fulfilled, (state, action) => {
-        // List mein us expense ko update kar do jo approve hua hai
-        const index = state.expenses.findIndex(exp => exp._id === action.payload._id);
+        const index = state.expenses.findIndex(
+          (exp) => exp._id === action.payload._id
+        );
         if (index !== -1) {
           state.expenses[index] = action.payload;
         }
-        toast.success("Aapka approval record ho gaya!");
+        toast.success("Expense approved successfully!");
+      })
+      .addCase(approveExpenseAction.rejected, (state, action) => {
+        state.error = action.payload;
+        toast.error(action.payload);
       });
   },
 });
